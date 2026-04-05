@@ -6,12 +6,14 @@
     <title>商业洞察记录</title>
     <link rel="stylesheet" href="style.css">
 
-    <!-- Firebase scripts -->
+    <!-- Firebase scripts：必须在所有自定义 JS 之前 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <!-- 你的自定义 JS -->
     <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
+    <script src="script.js"></script>
 </head>
 <body onload="onPageLoad()">
     <!-- Login Form (shown when not authenticated) -->
@@ -96,7 +98,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
     <script>
         function onPageLoad() {
             document.getElementById('loading').style.display = 'block';
