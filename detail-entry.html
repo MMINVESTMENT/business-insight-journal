@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速记录</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- Back Button & Title -->
+        <div class="page-header">
+            <a href="insight-library.html" class="back-link">← 返回</a>
+            <h1 class="page-title">快速记录</h1>
+        </div>
+
+        <!-- Tab Control -->
+        <div class="section-spacing">
+            <div class="tab-control">
+                <button class="tab-button" data-tab="decision">决策复盘</button>
+                <button class="tab-button tab-active" data-tab="insight">经验/灵感</button>
+            </div>
+        </div>
+
+        <!-- Insight Entry Form -->
+        <form id="insight-form" class="tab-content tab-active section-spacing">
+            <div class="form-section">
+                <label class="form-label">分类</label>
+                <select class="form-input" id="insight-category">
+                    <option value="">选择分类...</option>
+                    <option value="仓库管理">仓库管理</option>
+                    <option value="进货渠道">进货渠道</option>
+                    <option value="出货渠道">出货渠道</option>
+                    <option value="PDD">PDD</option>
+                    <option value="淘宝店">淘宝店</option>
+                    <option value="抖音">抖音</option>
+                    <option value="得物">得物</option>
+                </select>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">标题（可选）</label>
+                <input type="text" class="form-input" id="insight-title" placeholder="输入标题...">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">内容</label>
+                <textarea class="form-textarea" id="insight-content"></textarea>
+            </div>
+
+            <div class="form-section">
+                <button type="button" class="btn-primary" onclick="saveInsightEntry()">保存</button>
+            </div>
+        </form>
+
+        <!-- Saved Entries List -->
+        <div class="section-spacing">
+            <div class="section-label">已保存的条目</div>
+            <div id="entries-container" style="margin-top: 16px;">
+                <!-- Entries will be populated here -->
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="success-message" class="success-message" style="display: none;">保存成功</div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function getUrlParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function loadEntries() {
+            const category = getUrlParam('category');
+            if (category) {
+                document.getElementById('insight-category').value = decodeURIComponent(category);
+            }
+
+            const insights = JSON.parse(localStorage.getItem('businessInsights')) || {};
+            const container = document.getElementById('entries-container');
+            container.innerHTML = '';
+
+            const selectedCategory = document.getElementById('insight-category').value;
+            if (!selectedCategory) {
+                container.innerHTML = '<div class="empty-state"><p>暂无记录</p></div>';
+                return;
+            }
+
+            const entries = insights[selectedCategory] || [];
+
+            if (entries.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>暂无记录</p></div>';
+                return;
+            }
+
+            entries.forEach(entry => {
+                const entryCard = document.createElement('div');
+                entryCard.className = 'card-saved-entry';
+                entryCard.innerHTML = `
+                    <div style="margin-bottom: 8px;">
+                        ${entry.title ? `<strong>${entry.title}</strong>` : '<em style="color: #999;">无标题</em>'}
+                    </div>
+                    <div style="font-size: 13px; color: #666; line-height: 1.5;">
+                        ${entry.content.substring(0, 100)}${entry.content.length > 100 ? '...' : ''}
+                    </div>
+                    <div style="font-size: 12px; color: #999; margin-top: 12px;">
+                        ${new Date(entry.createdAt).toLocaleDateString('zh-CN')}
+                    </div>
+                `;
+                container.appendChild(entryCard);
+            });
+        }
+
+        function saveInsightEntry() {
+            const category = document.getElementById('insight-category').value;
+            const title = document.getElementById('insight-title').value;
+            const content = document.getElementById('insight-content').value;
+
+            if (!category) {
+                alert('请选择分类');
+                return;
+            }
+
+            if (!content) {
+                alert('请填写内容');
+                return;
+            }
+
+            const entry = {
+                id: `insight-${Date.now()}`,
+                title: title,
+                content: content,
+                createdAt: new Date().toISOString()
+            };
+
+            let insights = JSON.parse(localStorage.getItem('businessInsights')) || {};
+            if (!insights[category]) {
+                insights[category] = [];
+            }
+            insights[category].push(entry);
+            localStorage.setItem('businessInsights', JSON.stringify(insights));
+
+            // Clear form
+            document.getElementById('insight-title').value = '';
+            document.getElementById('insight-content').value = '';
+
+            showSuccessMessage();
+            loadEntries();
+        }
+
+        function showSuccessMessage() {
+            const msg = document.getElementById('success-message');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+        }
+
+        // Initialize
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.dataset.tab === 'decision') {
+                    window.location.href = 'quick-record.html';
+                }
+            });
+        });
+
+        document.getElementById('insight-category').addEventListener('change', loadEntries);
+        loadEntries();
+    </script>
+</body>
+</html>

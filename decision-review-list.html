@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>决策复盘详情</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- Back Button & Title -->
+        <div class="page-header">
+            <a href="decision-review.html" class="back-link">← 返回</a>
+            <h1 class="page-title">决策复盘</h1>
+        </div>
+
+        <!-- Year and Month Display -->
+        <div class="section-spacing" id="date-display">
+            <div class="section-label" id="year-display">2026年</div>
+            <div style="font-size: 14px; color: #666; margin-top: 8px;" id="month-display">4月</div>
+        </div>
+
+        <!-- Form -->
+        <form id="review-form" class="section-spacing">
+            <div class="form-section">
+                <label class="form-label">市场判断</label>
+                <textarea class="form-textarea" id="market-judgment"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">逻辑推导</label>
+                <textarea class="form-textarea" id="logic-reasoning"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">执行情况</label>
+                <textarea class="form-textarea" id="execution-status"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">问题/反思</label>
+                <textarea class="form-textarea" id="problems-reflection"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">总结</label>
+                <textarea class="form-textarea" id="summary"></textarea>
+            </div>
+
+            <div class="form-section">
+                <button type="button" class="btn-primary" onclick="saveReview()">保存</button>
+            </div>
+        </form>
+
+        <!-- Success Message -->
+        <div id="success-message" class="success-message" style="display: none;">保存成功</div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function getUrlParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function loadReview() {
+            const year = getUrlParam('year') || new Date().getFullYear();
+            const month = getUrlParam('month') || new Date().getMonth() + 1;
+
+            document.getElementById('year-display').textContent = year + '年';
+            document.getElementById('month-display').textContent = month + '月';
+
+            const reviews = JSON.parse(localStorage.getItem('businessDecisionReviews')) || [];
+            const review = reviews.find(r => r.year == year && r.month == month);
+
+            if (review) {
+                document.getElementById('market-judgment').value = review.marketJudgment || '';
+                document.getElementById('logic-reasoning').value = review.logicReasoning || '';
+                document.getElementById('execution-status').value = review.executionStatus || '';
+                document.getElementById('problems-reflection').value = review.problemsReflection || '';
+                document.getElementById('summary').value = review.summary || '';
+
+                // Store for saving
+                window.currentReviewId = review.id;
+            }
+        }
+
+        function saveReview() {
+            const year = getUrlParam('year') || new Date().getFullYear();
+            const month = getUrlParam('month') || new Date().getMonth() + 1;
+
+            const entry = {
+                id: `decision-${year}-${month}`,
+                year: year,
+                month: month,
+                marketJudgment: document.getElementById('market-judgment').value,
+                logicReasoning: document.getElementById('logic-reasoning').value,
+                executionStatus: document.getElementById('execution-status').value,
+                problemsReflection: document.getElementById('problems-reflection').value,
+                summary: document.getElementById('summary').value,
+                createdAt: new Date().toISOString()
+            };
+
+            let reviews = JSON.parse(localStorage.getItem('businessDecisionReviews')) || [];
+            reviews = reviews.filter(r => r.id !== entry.id);
+            reviews.push(entry);
+            localStorage.setItem('businessDecisionReviews', JSON.stringify(reviews));
+
+            showSuccessMessage();
+        }
+
+        function showSuccessMessage() {
+            const msg = document.getElementById('success-message');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+        }
+
+        loadReview();
+    </script>
+</body>
+</html>

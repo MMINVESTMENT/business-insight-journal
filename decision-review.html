@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>决策复盘</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- Back Button & Title -->
+        <div class="page-header">
+            <a href="index.html" class="back-link">← 返回</a>
+            <h1 class="page-title">决策复盘</h1>
+        </div>
+
+        <!-- Content Section -->
+        <div class="section-spacing" id="reviews-container">
+            <!-- Reviews will be populated here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <p>暂无记录</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function loadReviews() {
+            const reviews = JSON.parse(localStorage.getItem('businessDecisionReviews')) || [];
+            const container = document.getElementById('reviews-container');
+            const emptyState = document.getElementById('empty-state');
+
+            if (reviews.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            // Group by year
+            const byYear = {};
+            reviews.forEach(review => {
+                if (!byYear[review.year]) {
+                    byYear[review.year] = [];
+                }
+                byYear[review.year].push(review);
+            });
+
+            // Sort years descending
+            Object.keys(byYear).sort().reverse().forEach(year => {
+                // Year header
+                const yearDiv = document.createElement('div');
+                yearDiv.style.marginBottom = '24px';
+
+                const yearTitle = document.createElement('div');
+                yearTitle.className = 'section-label';
+                yearTitle.textContent = year + '年';
+                yearDiv.appendChild(yearTitle);
+
+                // Month cards
+                byYear[year].forEach(review => {
+                    const card = document.createElement('div');
+                    card.className = 'card-clickable';
+                    card.style.marginBottom = '12px';
+                    card.style.cursor = 'pointer';
+                    card.onclick = () => {
+                        window.location.href = `decision-review-list.html?year=${review.year}&month=${review.month}`;
+                    };
+
+                    card.innerHTML = `
+                        <div class="card-content" style="flex: 1;">
+                            <div class="card-label">${review.month}月</div>
+                            <div style="font-size: 12px; color: #999; margin-top: 4px;">
+                                ${new Date(review.createdAt).toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                        <div class="card-arrow">›</div>
+                    `;
+
+                    yearDiv.appendChild(card);
+                });
+
+                container.appendChild(yearDiv);
+            });
+        }
+
+        loadReviews();
+    </script>
+</body>
+</html>

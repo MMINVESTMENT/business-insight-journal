@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速记录</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- Back Button & Title -->
+        <div class="page-header">
+            <a href="index.html" class="back-link">← 返回</a>
+            <h1 class="page-title">快速记录</h1>
+        </div>
+
+        <!-- Tab Control -->
+        <div class="section-spacing">
+            <div class="tab-control">
+                <button class="tab-button tab-active" data-tab="decision">决策复盘</button>
+                <button class="tab-button" data-tab="insight">经验/灵感</button>
+            </div>
+        </div>
+
+        <!-- Decision Review Form -->
+        <form id="decision-form" class="tab-content tab-active">
+            <div class="form-section">
+                <label class="form-label">年份</label>
+                <input type="number" class="form-input" id="decision-year" placeholder="2026">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">月份</label>
+                <input type="number" class="form-input" id="decision-month" placeholder="1" min="1" max="12">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">市场判断</label>
+                <textarea class="form-textarea" id="decision-market"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">逻辑推导</label>
+                <textarea class="form-textarea" id="decision-logic"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">执行情况</label>
+                <textarea class="form-textarea" id="decision-execution"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">问题/反思</label>
+                <textarea class="form-textarea" id="decision-problems"></textarea>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">总结</label>
+                <textarea class="form-textarea" id="decision-summary"></textarea>
+            </div>
+
+            <div class="form-section">
+                <button type="button" class="btn-primary" onclick="saveDecisionReview()">保存</button>
+            </div>
+        </form>
+
+        <!-- Insight Entry Form -->
+        <form id="insight-form" class="tab-content">
+            <div class="form-section">
+                <label class="form-label">分类</label>
+                <select class="form-input" id="insight-category">
+                    <option value="">选择分类...</option>
+                    <option value="仓库管理">仓库管理</option>
+                    <option value="进货渠道">进货渠道</option>
+                    <option value="出货渠道">出货渠道</option>
+                    <option value="PDD">PDD</option>
+                    <option value="淘宝店">淘宝店</option>
+                    <option value="抖音">抖音</option>
+                    <option value="得物">得物</option>
+                </select>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">标题（可选）</label>
+                <input type="text" class="form-input" id="insight-title" placeholder="输入标题...">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">内容</label>
+                <textarea class="form-textarea" id="insight-content"></textarea>
+            </div>
+
+            <div class="form-section">
+                <button type="button" class="btn-primary" onclick="saveInsightEntry()">保存</button>
+            </div>
+        </form>
+
+        <!-- Success Message -->
+        <div id="success-message" class="success-message" style="display: none;">保存成功</div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize tab switching
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // Set default year and month to current
+        document.getElementById('decision-year').value = new Date().getFullYear();
+        document.getElementById('decision-month').value = new Date().getMonth() + 1;
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('tab-active');
+            });
+            document.querySelectorAll('.tab-button').forEach(el => {
+                el.classList.remove('tab-active');
+            });
+
+            // Show active tab
+            if (tabName === 'decision') {
+                document.getElementById('decision-form').classList.add('tab-active');
+            } else if (tabName === 'insight') {
+                document.getElementById('insight-form').classList.add('tab-active');
+            }
+
+            // Mark button as active
+            event.target.classList.add('tab-active');
+        }
+
+        function showSuccessMessage() {
+            const msg = document.getElementById('success-message');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+        }
+
+        function saveDecisionReview() {
+            const year = document.getElementById('decision-year').value;
+            const month = document.getElementById('decision-month').value;
+            const marketJudgment = document.getElementById('decision-market').value;
+            const logicReasoning = document.getElementById('decision-logic').value;
+            const executionStatus = document.getElementById('decision-execution').value;
+            const problemsReflection = document.getElementById('decision-problems').value;
+            const summary = document.getElementById('decision-summary').value;
+
+            if (!year || !month) {
+                alert('请填写年份和月份');
+                return;
+            }
+
+            const entry = {
+                id: `decision-${year}-${month}`,
+                year: year,
+                month: month,
+                marketJudgment: marketJudgment,
+                logicReasoning: logicReasoning,
+                executionStatus: executionStatus,
+                problemsReflection: problemsReflection,
+                summary: summary,
+                createdAt: new Date().toISOString()
+            };
+
+            let reviews = JSON.parse(localStorage.getItem('businessDecisionReviews')) || [];
+            reviews = reviews.filter(r => r.id !== entry.id);
+            reviews.push(entry);
+            localStorage.setItem('businessDecisionReviews', JSON.stringify(reviews));
+
+            showSuccessMessage();
+        }
+
+        function saveInsightEntry() {
+            const category = document.getElementById('insight-category').value;
+            const title = document.getElementById('insight-title').value;
+            const content = document.getElementById('insight-content').value;
+
+            if (!category) {
+                alert('请选择分类');
+                return;
+            }
+
+            if (!content) {
+                alert('请填写内容');
+                return;
+            }
+
+            const entry = {
+                id: `insight-${Date.now()}`,
+                title: title,
+                content: content,
+                createdAt: new Date().toISOString()
+            };
+
+            let insights = JSON.parse(localStorage.getItem('businessInsights')) || {};
+            if (!insights[category]) {
+                insights[category] = [];
+            }
+            insights[category].push(entry);
+            localStorage.setItem('businessInsights', JSON.stringify(insights));
+
+            // Clear form
+            document.getElementById('insight-title').value = '';
+            document.getElementById('insight-content').value = '';
+
+            showSuccessMessage();
+        }
+    </script>
+</body>
+</html>

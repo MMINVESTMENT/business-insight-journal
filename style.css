@@ -1,0 +1,336 @@
+/* ========================================
+   RESET & GLOBAL
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+input, select, textarea {
+    font-family: inherit;
+    border: none;
+    border-radius: 8px;
+}
+
+/* ========================================
+   LAYOUT
+   ======================================== */
+
+.page-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 24px 20px;
+    min-height: 100vh;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.back-link {
+    display: inline-block;
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #666;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000;
+    line-height: 1.2;
+}
+
+.section-spacing {
+    margin-bottom: 24px;
+}
+
+.section-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.btn-primary {
+    width: 100%;
+    padding: 16px 20px;
+    background-color: #000;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.btn-primary:active {
+    opacity: 0.7;
+}
+
+/* 导出/导入按钮样式 */
+.btn-secondary {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+    margin-bottom: 8px;
+}
+
+.btn-secondary:hover {
+    background-color: #e5e5e5;
+}
+
+.btn-secondary:active {
+    background-color: #d9d9d9;
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+
+.card-clickable {
+    display: flex;
+    align-items: center;
+    padding: 16px 16px;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    gap: 12px;
+}
+
+.card-clickable:hover {
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.card-arrow {
+    font-size: 20px;
+    color: #ccc;
+    flex-shrink: 0;
+}
+
+.card-saved-entry {
+    padding: 16px;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: background-color 0.2s;
+}
+
+.card-saved-entry:hover {
+    background-color: #f9f9f9;
+}
+
+/* ========================================
+   FORMS
+   ======================================== */
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 8px;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #333;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #000;
+}
+
+.form-textarea {
+    min-height: 140px;
+    resize: vertical;
+    padding: 16px;
+}
+
+/* ========================================
+   TABS
+   ======================================== */
+
+.tab-control {
+    display: flex;
+    gap: 8px;
+    background-color: #f0f0f0;
+    padding: 4px;
+    border-radius: 10px;
+    justify-content: center;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 10px 16px;
+    background-color: transparent;
+    color: #999;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.tab-button.tab-active {
+    background-color: #fff;
+    color: #000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ========================================
+   TAB CONTENT
+   ======================================== */
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.tab-active {
+    display: block;
+}
+
+/* ========================================
+   MESSAGES
+   ======================================== */
+
+.success-message {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #000;
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 480px) {
+    .page-container {
+        padding: 16px 16px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .form-textarea {
+        min-height: 120px;
+    }
+}
+.loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f9f9f9;
+    z-index: 9999;
+}
