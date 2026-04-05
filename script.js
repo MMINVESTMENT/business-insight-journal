@@ -1,83 +1,32 @@
-// ========================================
-// AUTHENTICATION FUNCTIONS
-// ========================================
+// script.js (Firebase v8 全局风格)
 
-// Current user state
-let currentUser = null;
-let authInitialized = false; // 添加初始化标志
+// 注册
+function registerUser(email, password) {
+    return firebase.auth().createUserWithEmailAndPassword(email, password);
+}
 
-// Auth state observer
-firebase.auth().onAuthStateChanged((user) => {
-    currentUser = user;
-    authInitialized = true; // 标记已初始化
+// 登录
+function loginUser(email, password) {
+    return firebase.auth().signInWithEmailAndPassword(email, password);
+}
 
+// 登出
+function logoutUser() {
+    return firebase.auth().signOut();
+}
+
+// 监听登录状态
+firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-        // User is signed in
-        console.log('User signed in:', user.email);
-        showAppContent();
+        console.log("已登录:", user.email);
+        // 这里可以显示主内容，隐藏登录表单等
     } else {
-        // User is signed out
-        console.log('User signed out');
-        showLoginForm();
+        console.log("未登录");
+        // 这里可以显示登录表单，隐藏主内容等
     }
 });
 
-// Login function
-async function loginUser(email, password) {
-    try {
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-        console.log('Login successful');
-        return userCredential.user;
-    } catch (error) {
-        console.error('Login error:', error);
-        throw error;
-    }
-}
-
-// Register function (optional)
-async function registerUser(email, password) {
-    try {
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        console.log('Registration successful');
-        return userCredential.user;
-    } catch (error) {
-        console.error('Registration error:', error);
-        throw error;
-    }
-}
-
-// Logout function
-async function logoutUser() {
-    try {
-        await firebase.auth().signOut();
-        console.log('Logout successful');
-    } catch (error) {
-        console.error('Logout error:', error);
-        throw error;
-    }
-}
-
-// Check if user is authenticated
-function isAuthenticated() {
-    return currentUser !== null;
-}
-
-// Get current user ID
-function getCurrentUserId() {
-    return currentUser ? currentUser.uid : null;
-}
-
-// UI helpers (to be called from HTML)
-function showLoginForm() {
-    const loginForm = document.getElementById('login-form');
-    const appContent = document.getElementById('app-content');
-    if (loginForm) loginForm.style.display = 'block';
-    if (appContent) appContent.style.display = 'none';
-}
-
-function showAppContent() {
-    const loginForm = document.getElementById('login-form');
-    const appContent = document.getElementById('app-content');
-    if (loginForm) loginForm.style.display = 'none';
-    if (appContent) appContent.style.display = 'block';
+// 示例：添加数据到 Firestore
+function addNote(data) {
+    return firebase.firestore().collection("notes").add(data);
 }
