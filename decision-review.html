@@ -19,7 +19,34 @@
             <a href="decision-review-list.html" class="back-link">← 返回</a>
             <h1 class="page-title">决策复盘详情</h1>
         </div>
-        <div class="section-spacing">
+        <!-- 只读模式 -->
+        <div id="readonly-section" class="section-spacing">
+            <div class="form-section">
+                <label class="form-label">市场判断</label>
+                <div id="readonly-market-judgment" class="readonly-content"></div>
+            </div>
+            <div class="form-section">
+                <label class="form-label">选品复盘</label>
+                <div id="readonly-logic-reasoning" class="readonly-content"></div>
+            </div>
+            <div class="form-section">
+                <label class="form-label">执行情况</label>
+                <div id="readonly-execution-status" class="readonly-content"></div>
+            </div>
+            <div class="form-section">
+                <label class="form-label">问题/反思</label>
+                <div id="readonly-problems-reflection" class="readonly-content"></div>
+            </div>
+            <div class="form-section">
+                <label class="form-label">总结</label>
+                <div id="readonly-summary" class="readonly-content"></div>
+            </div>
+            <div class="form-section">
+                <button class="btn-primary" onclick="enterEditMode()">编辑</button>
+            </div>
+        </div>
+        <!-- 编辑模式 -->
+        <div id="edit-section" class="section-spacing" style="display:none;">
             <div class="form-section">
                 <label class="form-label">市场判断</label>
                 <div id="market-judgment" class="quill-editor"></div>
@@ -42,6 +69,7 @@
             </div>
             <div class="form-section">
                 <button type="button" class="btn-primary" onclick="saveReview()">保存</button>
+                <button type="button" class="btn-secondary" onclick="cancelEdit()" style="margin-left:16px;">取消</button>
             </div>
         </div>
         <div id="success-message" class="success-message" style="display: none;">保存成功</div>
@@ -69,6 +97,8 @@
             return urlParams.get(param);
         }
 
+        let reviewCache = null;
+
         function loadReview() {
             const year = getUrlParam('year');
             const month = getUrlParam('month');
@@ -80,15 +110,35 @@
                     .get()
                     .then(doc => {
                         if (doc.exists) {
-                            const review = doc.data();
-                            editors['market-judgment'].root.innerHTML = review.marketJudgment || '';
-                            editors['logic-reasoning'].root.innerHTML = review.logicReasoning || '';
-                            editors['execution-status'].root.innerHTML = review.executionStatus || '';
-                            editors['problems-reflection'].root.innerHTML = review.problemsReflection || '';
-                            editors['summary'].root.innerHTML = review.summary || '';
+                            reviewCache = doc.data();
+                            showReadonly();
                         }
                     });
             });
+        }
+
+        function showReadonly() {
+            document.getElementById('readonly-market-judgment').innerHTML = reviewCache.marketJudgment || '';
+            document.getElementById('readonly-logic-reasoning').innerHTML = reviewCache.logicReasoning || '';
+            document.getElementById('readonly-execution-status').innerHTML = reviewCache.executionStatus || '';
+            document.getElementById('readonly-problems-reflection').innerHTML = reviewCache.problemsReflection || '';
+            document.getElementById('readonly-summary').innerHTML = reviewCache.summary || '';
+            document.getElementById('readonly-section').style.display = '';
+            document.getElementById('edit-section').style.display = 'none';
+        }
+
+        function enterEditMode() {
+            editors['market-judgment'].root.innerHTML = reviewCache.marketJudgment || '';
+            editors['logic-reasoning'].root.innerHTML = reviewCache.logicReasoning || '';
+            editors['execution-status'].root.innerHTML = reviewCache.executionStatus || '';
+            editors['problems-reflection'].root.innerHTML = reviewCache.problemsReflection || '';
+            editors['summary'].root.innerHTML = reviewCache.summary || '';
+            document.getElementById('readonly-section').style.display = 'none';
+            document.getElementById('edit-section').style.display = '';
+        }
+
+        function cancelEdit() {
+            showReadonly();
         }
 
         function saveReview() {
@@ -112,10 +162,12 @@
                     .collection('decisionReviews').doc(`${year}-${month}`)
                     .set(entry)
                     .then(() => {
+                        reviewCache = entry;
                         document.getElementById('success-message').style.display = 'block';
                         setTimeout(() => {
                             document.getElementById('success-message').style.display = 'none';
                         }, 1500);
+                        showReadonly();
                     });
             });
         }
@@ -127,6 +179,13 @@
             background: #fff;
             min-height: 80px;
             margin-bottom: 12px;
+        }
+        .readonly-content {
+            background: #fff;
+            min-height: 80px;
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 8px;
         }
     </style>
 </body>
