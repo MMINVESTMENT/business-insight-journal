@@ -34,12 +34,10 @@
                 html += `<div class="section-label" style="margin-top:24px;">${year}年</div>`;
                 yearMap[year].sort((a, b) => b.month - a.month).forEach(r => {
                     html += `
-                        <div class="card-clickable" style="margin-bottom:24px;cursor:pointer;display:flex;align-items:center;" onclick="window.location.href='decision-review.html?year=${r.year}&month=${r.month}'">
-                            <div style="font-size:2em;width:2em;text-align:center;">${r.month}月</div>
-                            <div style="margin-left:1em;flex:1;">
-                                <span style="font-size:1.1em;">${r.summary ? r.summary.substring(0, 40) : '无总结'}</span>
-                                <span style="color:#bbb;font-size:0.95em;margin-left:1em;">${r.createdAt ? r.createdAt.split('T')[0] : ''}</span>
-                            </div>
+                        <div class="card-clickable" style="margin-bottom:12px;cursor:pointer;" onclick="window.location.href='decision-review.html?year=${r.year}&month=${r.month}'">
+                            <div style="font-size:1.1em;padding:12px 0 4px 0;">${r.month}月</div>
+                            <div style="color:#888;font-size:0.95em;padding-bottom:4px;">${r.summary ? r.summary.substring(0, 40) : '无总结'}</div>
+                            <div style="color:#bbb;font-size:0.85em;">${r.createdAt ? r.createdAt.split('T')[0] : ''}</div>
                         </div>
                     `;
                 });
