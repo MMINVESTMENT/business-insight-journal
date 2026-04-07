@@ -43,7 +43,7 @@
             loginUser(email, password)
                 .then(function() {
                     alert('登录成功');
-                    window.location.href = "insight-library.html"; // 登录后跳转到主页面
+                    window.location.href = "quick-record.html"; // 登录后跳转到主页面
                 })
                 .catch(function(error) {
                     alert('登录失败: ' + error.message);
@@ -55,7 +55,7 @@
             registerUser(email, password)
                 .then(function() {
                     alert('注册成功');
-                    window.location.href = "insight-library.html"; // 注册后跳转到主页面
+                    window.location.href = "quick-record.html"; // 注册后跳转到主页面
                 })
                 .catch(function(error) {
                     alert('注册失败: ' + error.message);
