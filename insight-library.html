@@ -8,67 +8,47 @@
 </head>
 <body>
     <div class="page-container">
-        <!-- Back Button & Title -->
         <div class="page-header">
             <a href="index.html" class="back-link">← 返回</a>
             <h1 class="page-title">经验/灵感库</h1>
         </div>
-
-        <!-- Category List -->
-        <div class="section-spacing" id="categories-container">
-            <!-- Categories will be populated here -->
-        </div>
+        <div id="insight-list" class="section-spacing"></div>
     </div>
-
-    <script src="script.js"></script>
     <script>
-        function loadCategories() {
-            const categories = [
-                '仓库管理',
-                '进货渠道',
-                '出货渠道',
-                'PDD',
-                '淘宝店',
-                '抖音',
-                '得物'
-            ];
-
-            const container = document.getElementById('categories-container');
-            container.innerHTML = '';
-
+        // 加载所有经验/灵感记录并按分类分组显示
+        function renderInsightList() {
+            const insights = JSON.parse(localStorage.getItem('businessInsights')) || {};
+            const categories = Object.keys(insights);
+            if (categories.length === 0) {
+                document.getElementById('insight-list').innerHTML = '<p>暂无记录</p>';
+                return;
+            }
+            // Emoji map
+            const emojiMap = {
+                '仓库管理': '📦',
+                '进货渠道': '📥',
+                '出货渠道': '📤',
+                'PDD': '🛒',
+                '淘宝店': '🏪',
+                '抖音': '🎵',
+                '得物': '👟'
+            };
+            let html = '';
             categories.forEach(cat => {
-                const card = document.createElement('div');
-                card.className = 'card-clickable';
-                card.style.marginBottom = '12px';
-                card.style.cursor = 'pointer';
-                card.onclick = () => {
-                    window.location.href = `detail-entry.html?category=${encodeURIComponent(cat)}`;
-                };
-
-                // Emoji map for categories
-                const emojiMap = {
-                    '仓库管理': '📦',
-                    '进货渠道': '📥',
-                    '出货渠道': '📤',
-                    'PDD': '🛒',
-                    '淘宝店': '🏪',
-                    '抖音': '🎵',
-                    '得物': '👟'
-                };
-
-                card.innerHTML = `
-                    <div class="card-icon">${emojiMap[cat] || '📝'}</div>
-                    <div class="card-content">
-                        <div class="card-label">${cat}</div>
-                    </div>
-                    <div class="card-arrow">›</div>
-                `;
-
-                container.appendChild(card);
+                html += `<div class="section-label" style="margin-top:24px;">${emojiMap[cat] || '📝'} ${cat}</div>`;
+                insights[cat].slice().reverse().forEach(entry => {
+                    html += `
+                        <div class="card-clickable" style="margin-bottom:12px;cursor:pointer;" onclick="window.location.href='detail-entry.html?category=${encodeURIComponent(cat)}&id=${entry.id}'">
+                            <div style="font-size:1.1em;padding:12px 0 4px 0;">${entry.title ? entry.title : '无标题'}</div>
+                            <div style="color:#888;font-size:0.95em;padding-bottom:4px;">${entry.content ? entry.content.substring(0, 40) : '无内容'}</div>
+                            <div style="color:#bbb;font-size:0.85em;">${entry.createdAt ? entry.createdAt.split('T')[0] : ''}</div>
+                        </div>
+                    `;
+                });
             });
+            document.getElementById('insight-list').innerHTML = html;
         }
-
-        loadCategories();
+        renderInsightList();
     </script>
 </body>
 </html>
