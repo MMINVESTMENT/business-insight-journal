@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 商业洞察记录</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase v8 CDN scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">商业洞察记录</h1>
+        </div>
+        <div class="section-spacing">
+            <div class="form-section">
+                <label class="form-label">邮箱</label>
+                <input type="email" class="form-input" id="login-email" placeholder="your@email.com">
+            </div>
+            <div class="form-section">
+                <label class="form-label">密码</label>
+                <input type="password" class="form-input" id="login-password" placeholder="密码">
+            </div>
+            <div class="form-section">
+                <button class="btn-primary" onclick="handleLogin()">登录</button>
+            </div>
+            <div class="form-section">
+                <button class="btn-secondary" onclick="handleRegister()">注册新账户</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function handleLogin() {
+            var email = document.getElementById('login-email').value;
+            var password = document.getElementById('login-password').value;
+            loginUser(email, password)
+                .then(function() {
+                    alert('登录成功');
+                    window.location.href = "index.html";
+                })
+                .catch(function(error) {
+                    alert('登录失败: ' + error.message);
+                });
+        }
+        function handleRegister() {
+            var email = document.getElementById('login-email').value;
+            var password = document.getElementById('login-password').value;
+            registerUser(email, password)
+                .then(function() {
+                    alert('注册成功');
+                    window.location.href = "index.html";
+                })
+                .catch(function(error) {
+                    alert('注册失败: ' + error.message);
+                });
+        }
+    </script>
+</body>
+</html>

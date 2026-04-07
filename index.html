@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商业洞察记录</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase v8 CDN scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
     <div class="page-container">
@@ -29,8 +35,17 @@
         <div style="margin:32px 0 0 0;">
             <button class="btn-secondary" style="width:100%;" onclick="exportRecords()">导出所有记录</button>
         </div>
+        <div style="margin:32px 0 0 0;">
+            <button class="btn-secondary" style="width:100%;" onclick="logoutUser().then(()=>window.location.href='login.html')">退出登录</button>
+        </div>
     </div>
     <script>
+        // 未登录自动跳转到登录页
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.href = "login.html";
+            }
+        });
         function exportRecords() {
             const reviews = localStorage.getItem('businessDecisionReviews');
             const insights = localStorage.getItem('businessInsights');
