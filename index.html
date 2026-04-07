@@ -5,62 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商业洞察记录</title>
     <link rel="stylesheet" href="style.css">
-
-    <!-- Firebase v8 CDN scripts (全局风格，顺序不能错) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <!-- 配置和主逻辑 -->
-    <script src="firebase-config.js"></script>
-    <script src="script.js"></script>
 </head>
 <body>
-    <div id="login-form" class="page-container">
-        <div class="page-header">
-            <h1 class="page-title">商业洞察记录</h1>
+    <div class="page-container">
+        <h1 class="page-title">商业洞察记录</h1>
+        <div style="margin: 24px 0;">
+            <button class="btn-primary" style="width:100%;font-size:1.3em;padding:1em 0;" onclick="window.location.href='quick-record.html'">
+                ＋ 快速记录
+            </button>
         </div>
-        <div class="section-spacing">
-            <div class="form-section">
-                <label class="form-label">邮箱</label>
-                <input type="email" class="form-input" id="login-email" placeholder="your@email.com">
+        <div class="main-entry-list">
+            <div class="main-entry-item" onclick="window.location.href='decision-review-list.html'">
+                <span style="font-size:2em;vertical-align:middle;">📊</span>
+                <span style="font-size:1.2em;font-weight:bold;margin-left:12px;">决策复盘</span>
+                <span style="float:right;color:#bbb;font-size:1.5em;">&gt;</span>
             </div>
-            <div class="form-section">
-                <label class="form-label">密码</label>
-                <input type="password" class="form-input" id="login-password" placeholder="密码">
+            <div class="main-entry-item" onclick="window.location.href='insight-library.html'">
+                <span style="font-size:2em;vertical-align:middle;">🧠</span>
+                <span style="font-size:1.2em;font-weight:bold;margin-left:12px;">经验/灵感库</span>
+                <span style="float:right;color:#bbb;font-size:1.5em;">&gt;</span>
             </div>
-            <div class="form-section">
-                <button class="btn-primary" onclick="handleLogin()">登录</button>
-            </div>
-            <div class="form-section">
-                <button class="btn-secondary" onclick="handleRegister()">注册新账户</button>
-            </div>
+        </div>
+        <div style="margin:32px 0 0 0;">
+            <button class="btn-secondary" style="width:100%;" onclick="exportRecords()">导出所有记录</button>
         </div>
     </div>
     <script>
-        function handleLogin() {
-            var email = document.getElementById('login-email').value;
-            var password = document.getElementById('login-password').value;
-            loginUser(email, password)
-                .then(function() {
-                    alert('登录成功');
-                    window.location.href = "quick-record.html"; // 登录后跳转到主页面
-                })
-                .catch(function(error) {
-                    alert('登录失败: ' + error.message);
-                });
-        }
-        function handleRegister() {
-            var email = document.getElementById('login-email').value;
-            var password = document.getElementById('login-password').value;
-            registerUser(email, password)
-                .then(function() {
-                    alert('注册成功');
-                    window.location.href = "quick-record.html"; // 注册后跳转到主页面
-                })
-                .catch(function(error) {
-                    alert('注册失败: ' + error.message);
-                });
+        function exportRecords() {
+            const reviews = localStorage.getItem('businessDecisionReviews');
+            const insights = localStorage.getItem('businessInsights');
+            const blob = new Blob([`决策复盘:\n${reviews}\n\n灵感库:\n${insights}`], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'records.txt';
+            a.click();
+            URL.revokeObjectURL(url);
         }
     </script>
+    <style>
+        .main-entry-list {
+            margin: 32px 0 0 0;
+        }
+        .main-entry-item {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 24px 24px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+            transition: box-shadow 0.2s;
+        }
+        .main-entry-item:hover {
+            box-shadow: 0 4px 16px #0002;
+            background: #f8f8f8;
+        }
+    </style>
 </body>
 </html>
