@@ -15,7 +15,8 @@
     <script src="script.js"></script>
 </head>
 <body>
-    <div class="page-container">
+    <!-- 登录表单区域 -->
+    <div id="login-form" class="page-container">
         <div class="page-header">
             <h1 class="page-title">商业洞察记录</h1>
         </div>
@@ -36,6 +37,17 @@
             </div>
         </div>
     </div>
+
+    <!-- 主内容区域（登录后显示） -->
+    <div id="main-content" class="page-container" style="display:none;">
+        <div class="page-header">
+            <h1 class="page-title">欢迎，您已登录！</h1>
+        </div>
+        <div class="section-spacing">
+            <p>这里是主内容区。你可以在这里放置你的主页面内容，或跳转到其他页面。</p>
+            <button class="btn-secondary" onclick="logoutUser().then(()=>location.reload())">退出登录</button>
+        </div>
+    </div>
     <script>
         function handleLogin() {
             var email = document.getElementById('login-email').value;
@@ -43,8 +55,8 @@
             loginUser(email, password)
                 .then(function() {
                     alert('登录成功');
-                    // 跳转或刷新
-                    location.reload();
+                    // 登录成功后自动切换内容
+                    showMainContent();
                 })
                 .catch(function(error) {
                     alert('登录失败: ' + error.message);
@@ -56,12 +68,29 @@
             registerUser(email, password)
                 .then(function() {
                     alert('注册成功');
-                    location.reload();
+                    showMainContent();
                 })
                 .catch(function(error) {
                     alert('注册失败: ' + error.message);
                 });
         }
+        // 切换内容显示
+        function showMainContent() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        }
+        function showLoginForm() {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+        }
+        // 页面加载时根据登录状态切换内容
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                showMainContent();
+            } else {
+                showLoginForm();
+            }
+        });
     </script>
 </body>
 </html>
