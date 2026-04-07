@@ -15,7 +15,7 @@
         <div id="insight-list" class="section-spacing"></div>
     </div>
     <script>
-        // 加载所有经验/灵感记录，所有分类下所有记录摘要
+        // 加载所有经验/灵感记录并按分类分组显示
         function renderInsightList() {
             const insights = JSON.parse(localStorage.getItem('businessInsights')) || {};
             const categories = Object.keys(insights);
@@ -35,12 +35,11 @@
             };
             let html = '';
             categories.forEach(cat => {
+                html += `<div class="section-label" style="margin-top:24px;">${emojiMap[cat] || '📝'} ${cat}</div>`;
                 insights[cat].slice().reverse().forEach(entry => {
                     html += `
-                        <div class="card-clickable" style="margin-bottom:16px;cursor:pointer;" onclick="window.location.href='detail-entry.html?category=${encodeURIComponent(cat)}&id=${entry.id}'">
-                            <div style="font-size:1.1em;">
-                                ${emojiMap[cat] || '📝'} <b>${cat}</b> | ${entry.title ? entry.title : '无标题'}
-                            </div>
+                        <div class="card-clickable" style="margin-bottom:12px;cursor:pointer;" onclick="window.location.href='detail-entry.html?category=${encodeURIComponent(cat)}&id=${entry.id}'">
+                            <div style="font-size:1.1em;padding:12px 0 4px 0;">${entry.title ? entry.title : '无标题'}</div>
                             <div style="color:#888;font-size:0.95em;padding-bottom:4px;">${entry.content ? entry.content.substring(0, 40) : '无内容'}</div>
                             <div style="color:#bbb;font-size:0.85em;">${entry.createdAt ? entry.createdAt.split('T')[0] : ''}</div>
                         </div>
