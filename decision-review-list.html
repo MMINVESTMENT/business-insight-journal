@@ -41,14 +41,15 @@
                         // 按年份分组
                         const yearMap = {};
                         reviews.forEach(r => {
-                            if (!yearMap[r.year]) yearMap[r.year] = [];
-                            yearMap[r.year].push(r);
+                            const year = String(r.year);
+                            if (!yearMap[year]) yearMap[year] = [];
+                            yearMap[year].push(r);
                         });
                         // 渲染
                         let html = '';
-                        Object.keys(yearMap).sort((a, b) => b - a).forEach(year => {
+                        Object.keys(yearMap).sort((a, b) => b.localeCompare(a)).forEach(year => {
                             html += `<div class="section-label" style="margin-top:24px;">${year}年</div>`;
-                            yearMap[year].sort((a, b) => b.month - a.month).forEach(r => {
+                            yearMap[year].sort((a, b) => b.month.localeCompare(a.month)).forEach(r => {
                                 html += `
                                     <div class="card-clickable" style="margin-bottom:24px;cursor:pointer;display:flex;align-items:center;" onclick="window.location.href='decision-review.html?year=${r.year}&month=${r.month}'">
                                         <div style="font-size:2em;width:2em;text-align:center;">${r.month}月</div>

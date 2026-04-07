@@ -146,8 +146,8 @@
         }
 
         function saveReview() {
-            const year = getUrlParam('year');
-            const month = getUrlParam('month');
+            const year = String(getUrlParam('year'));
+            const month = String(getUrlParam('month'));
             firebase.auth().onAuthStateChanged(function(user) {
                 if (!user) return alert('请先登录');
                 const entry = {

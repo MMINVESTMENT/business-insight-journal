@@ -17,14 +17,14 @@
             <a href="index.html" class="back-link">← 返回</a>
             <h1 class="page-title">经验/灵感库</h1>
         </div>
-        <div id="insight-list" class="section-spacing"></div>
+        <div id="category-list" class="section-spacing"></div>
     </div>
     <script>
-        // 加载所有经验/灵感记录，所有分类下所有记录摘要
-        function renderInsightList() {
+        // 只显示所有分类列表
+        function renderCategoryList() {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (!user) {
-                    document.getElementById('insight-list').innerHTML = '<p>请先登录</p>';
+                    document.getElementById('category-list').innerHTML = '<p>请先登录</p>';
                     return;
                 }
                 firebase.firestore()
@@ -32,15 +32,15 @@
                     .collection('insights')
                     .get()
                     .then(snapshot => {
-                        const insights = {};
+                        const categories = {};
                         snapshot.forEach(doc => {
                             const data = doc.data();
-                            if (!insights[data.category]) insights[data.category] = [];
-                            insights[data.category].push({ id: doc.id, ...data });
+                            if (!categories[data.category]) categories[data.category] = 0;
+                            categories[data.category]++;
                         });
-                        const categories = Object.keys(insights);
-                        if (categories.length === 0) {
-                            document.getElementById('insight-list').innerHTML = '<p>暂无记录</p>';
+                        const categoryNames = Object.keys(categories);
+                        if (categoryNames.length === 0) {
+                            document.getElementById('category-list').innerHTML = '<p>暂无记录</p>';
                             return;
                         }
                         // Emoji map
@@ -54,24 +54,20 @@
                             '得物': '👟'
                         };
                         let html = '';
-                        categories.forEach(cat => {
-                            insights[cat].slice().reverse().forEach(entry => {
-                                html += `
-                                    <div class="card-clickable" style="margin-bottom:16px;cursor:pointer;" onclick="window.location.href='detail-entry.html?category=${encodeURIComponent(cat)}&id=${entry.id}'">
-                                        <div style="font-size:1.1em;">
-                                            ${emojiMap[cat] || '📝'} <b>${cat}</b> | ${entry.title ? entry.title : '无标题'}
-                                        </div>
-                                        <div style="color:#888;font-size:0.95em;padding-bottom:4px;">${entry.content ? entry.content.replace(/<[^>]+>/g, '').substring(0, 40) : '无内容'}</div>
-                                        <div style="color:#bbb;font-size:0.85em;">${entry.createdAt ? entry.createdAt.split('T')[0] : ''}</div>
+                        categoryNames.forEach(cat => {
+                            html += `
+                                <div class="card-clickable" style="margin-bottom:16px;cursor:pointer;" onclick="window.location.href='detail-entry.html?category=${encodeURIComponent(cat)}'">
+                                    <div style="font-size:1.1em;">
+                                        ${emojiMap[cat] || '📝'} <b>${cat}</b> <span style="color:#bbb;font-size:0.95em;">(${categories[cat]}条)</span>
                                     </div>
-                                `;
-                            });
+                                </div>
+                            `;
                         });
-                        document.getElementById('insight-list').innerHTML = html;
+                        document.getElementById('category-list').innerHTML = html;
                     });
             });
         }
-        renderInsightList();
+        renderCategoryList();
     </script>
 </body>
 </html>
