@@ -1,5 +1,5 @@
 var firebaseConfig = {
-  apiKey: "AIzaSyDdM_FPc6yRG-MSK4VNFeG9Gpeq1SDWjU",
+  apiKey: "AIzaSyDdM_fPc6yRG-MSK4VNFeG9Gpeqt1SDWjU",
   authDomain: "journal-recoding-website.firebaseapp.com",
   projectId: "journal-recoding-website",
   storageBucket: "journal-recoding-website.firebasestorage.app",
