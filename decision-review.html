@@ -42,6 +42,9 @@
                 <div id="readonly-summary" class="readonly-content"></div>
             </div>
             <div class="form-section">
+                <span id="readonly-date" style="color:#bbb;font-size:0.95em;"></span>
+            </div>
+            <div class="form-section">
                 <button class="btn-primary" onclick="enterEditMode()">编辑</button>
             </div>
         </div>
@@ -123,6 +126,7 @@
             document.getElementById('readonly-execution-status').innerHTML = reviewCache.executionStatus || '';
             document.getElementById('readonly-problems-reflection').innerHTML = reviewCache.problemsReflection || '';
             document.getElementById('readonly-summary').innerHTML = reviewCache.summary || '';
+            document.getElementById('readonly-date').textContent = reviewCache.createdAt ? reviewCache.createdAt.split('T')[0] : '';
             document.getElementById('readonly-section').style.display = '';
             document.getElementById('edit-section').style.display = 'none';
         }
