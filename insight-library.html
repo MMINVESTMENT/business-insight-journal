@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>经验/灵感库</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase v8 CDN scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
     <div class="page-container">
@@ -15,38 +20,56 @@
         <div id="insight-list" class="section-spacing"></div>
     </div>
     <script>
-        // 加载所有经验/灵感记录并按分类分组显示
+        // 加载所有经验/灵感记录，所有分类下所有记录摘要
         function renderInsightList() {
-            const insights = JSON.parse(localStorage.getItem('businessInsights')) || {};
-            const categories = Object.keys(insights);
-            if (categories.length === 0) {
-                document.getElementById('insight-list').innerHTML = '<p>暂无记录</p>';
-                return;
-            }
-            // Emoji map
-            const emojiMap = {
-                '仓库管理': '📦',
-                '进货渠道': '📥',
-                '出货渠道': '📤',
-                'PDD': '🛒',
-                '淘宝店': '🏪',
-                '抖音': '🎵',
-                '得物': '👟'
-            };
-            let html = '';
-            categories.forEach(cat => {
-                html += `<div class="section-label" style="margin-top:24px;">${emojiMap[cat] || '📝'} ${cat}</div>`;
-                insights[cat].slice().reverse().forEach(entry => {
-                    html += `
-                        <div class="card-clickable" style="margin-bottom:12px;cursor:pointer;" onclick="window.location.href='detail-entry.html?category=${encodeURIComponent(cat)}&id=${entry.id}'">
-                            <div style="font-size:1.1em;padding:12px 0 4px 0;">${entry.title ? entry.title : '无标题'}</div>
-                            <div style="color:#888;font-size:0.95em;padding-bottom:4px;">${entry.content ? entry.content.substring(0, 40) : '无内容'}</div>
-                            <div style="color:#bbb;font-size:0.85em;">${entry.createdAt ? entry.createdAt.split('T')[0] : ''}</div>
-                        </div>
-                    `;
-                });
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (!user) {
+                    document.getElementById('insight-list').innerHTML = '<p>请先登录</p>';
+                    return;
+                }
+                firebase.firestore()
+                    .collection('users').doc(user.uid)
+                    .collection('insights')
+                    .get()
+                    .then(snapshot => {
+                        const insights = {};
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            if (!insights[data.category]) insights[data.category] = [];
+                            insights[data.category].push({ id: doc.id, ...data });
+                        });
+                        const categories = Object.keys(insights);
+                        if (categories.length === 0) {
+                            document.getElementById('insight-list').innerHTML = '<p>暂无记录</p>';
+                            return;
+                        }
+                        // Emoji map
+                        const emojiMap = {
+                            '仓库管理': '📦',
+                            '进货渠道': '📥',
+                            '出货渠道': '📤',
+                            'PDD': '🛒',
+                            '淘宝店': '🏪',
+                            '抖音': '🎵',
+                            '得物': '👟'
+                        };
+                        let html = '';
+                        categories.forEach(cat => {
+                            insights[cat].slice().reverse().forEach(entry => {
+                                html += `
+                                    <div class="card-clickable" style="margin-bottom:16px;cursor:pointer;" onclick="window.location.href='detail-entry.html?category=${encodeURIComponent(cat)}&id=${entry.id}'">
+                                        <div style="font-size:1.1em;">
+                                            ${emojiMap[cat] || '📝'} <b>${cat}</b> | ${entry.title ? entry.title : '无标题'}
+                                        </div>
+                                        <div style="color:#888;font-size:0.95em;padding-bottom:4px;">${entry.content ? entry.content.replace(/<[^>]+>/g, '').substring(0, 40) : '无内容'}</div>
+                                        <div style="color:#bbb;font-size:0.85em;">${entry.createdAt ? entry.createdAt.split('T')[0] : ''}</div>
+                                    </div>
+                                `;
+                            });
+                        });
+                        document.getElementById('insight-list').innerHTML = html;
+                    });
             });
-            document.getElementById('insight-list').innerHTML = html;
         }
         renderInsightList();
     </script>

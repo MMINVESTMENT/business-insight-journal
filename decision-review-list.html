@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>决策复盘</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase v8 CDN scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
     <div class="page-container">
@@ -17,32 +22,47 @@
     <script>
         // 加载所有决策复盘记录并按年份分组显示
         function renderReviewList() {
-            const reviews = JSON.parse(localStorage.getItem('businessDecisionReviews')) || [];
-            if (reviews.length === 0) {
-                document.getElementById('review-list').innerHTML = '<p>暂无记录</p>';
-                return;
-            }
-            // 按年份分组
-            const yearMap = {};
-            reviews.forEach(r => {
-                if (!yearMap[r.year]) yearMap[r.year] = [];
-                yearMap[r.year].push(r);
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (!user) {
+                    document.getElementById('review-list').innerHTML = '<p>请先登录</p>';
+                    return;
+                }
+                firebase.firestore()
+                    .collection('users').doc(user.uid)
+                    .collection('decisionReviews')
+                    .get()
+                    .then(snapshot => {
+                        const reviews = [];
+                        snapshot.forEach(doc => reviews.push(doc.data()));
+                        if (reviews.length === 0) {
+                            document.getElementById('review-list').innerHTML = '<p>暂无记录</p>';
+                            return;
+                        }
+                        // 按年份分组
+                        const yearMap = {};
+                        reviews.forEach(r => {
+                            if (!yearMap[r.year]) yearMap[r.year] = [];
+                            yearMap[r.year].push(r);
+                        });
+                        // 渲染
+                        let html = '';
+                        Object.keys(yearMap).sort((a, b) => b - a).forEach(year => {
+                            html += `<div class="section-label" style="margin-top:24px;">${year}年</div>`;
+                            yearMap[year].sort((a, b) => b.month - a.month).forEach(r => {
+                                html += `
+                                    <div class="card-clickable" style="margin-bottom:24px;cursor:pointer;display:flex;align-items:center;" onclick="window.location.href='decision-review.html?year=${r.year}&month=${r.month}'">
+                                        <div style="font-size:2em;width:2em;text-align:center;">${r.month}月</div>
+                                        <div style="margin-left:1em;flex:1;">
+                                            <span style="font-size:1.1em;">${r.summary ? r.summary.replace(/<[^>]+>/g, '').substring(0, 40) : '无总结'}</span>
+                                            <span style="color:#bbb;font-size:0.95em;margin-left:1em;">${r.createdAt ? r.createdAt.split('T')[0] : ''}</span>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        });
+                        document.getElementById('review-list').innerHTML = html;
+                    });
             });
-            // 渲染
-            let html = '';
-            Object.keys(yearMap).sort((a, b) => b - a).forEach(year => {
-                html += `<div class="section-label" style="margin-top:24px;">${year}年</div>`;
-                yearMap[year].sort((a, b) => b.month - a.month).forEach(r => {
-                    html += `
-                        <div class="card-clickable" style="margin-bottom:12px;cursor:pointer;" onclick="window.location.href='decision-review.html?year=${r.year}&month=${r.month}'">
-                            <div style="font-size:1.1em;padding:12px 0 4px 0;">${r.month}月</div>
-                            <div style="color:#888;font-size:0.95em;padding-bottom:4px;">${r.summary ? r.summary.substring(0, 40) : '无总结'}</div>
-                            <div style="color:#bbb;font-size:0.85em;">${r.createdAt ? r.createdAt.split('T')[0] : ''}</div>
-                        </div>
-                    `;
-                });
-            });
-            document.getElementById('review-list').innerHTML = html;
         }
         renderReviewList();
     </script>
